@@ -1,84 +1,86 @@
-var canvas;
-var block1,block2,block3,block4;
-var ball, edges;
-var music;
+var starImg,bgImg;
+var star, starBody;
+//create variable for fairy sprite and fairyImg
+var fairy, fairyImg, fairyAnime;
+var wow;
 
-function preload(){
-    // load sound here
-    music = loadSound("music.mp3");
+const Engine = Matter.Engine;
+const World = Matter.World;
+const Bodies = Matter.Bodies;
+const Body = Matter.Body;
+
+function preload()
+{
+	starImg = loadImage("images/star.png");
+	bgImg = loadImage("images/starNight.png");
+	//load animation for fairy here
+	fairyImg = loadImage("images/fairy.png");
+	fairyAnime = loadAnimation("images/fairyImage1.png", "images/fairyImage2.png");
+	wow = loadSound("sound/JoyMusic.mp3");
 }
 
+function setup() {
+	createCanvas(800, 750);
 
-function setup(){
-    canvas = createCanvas(800,600);
+	//write code to play fairyVoice sound
+	wow.play();
+	//create fairy sprite and add animation for fairy
+	fairy = createSprite(100,600, 50, 50);
+	fairy.addImage(fairyImg);
+	fairy.scale = 0.2;
 
-    block1 = createSprite(95,580,190,30);
-    block1.shapeColor = "blue";
+	star = createSprite(650,30);
+	star.addImage(starImg);
+	star.scale = 0.2;
 
-    block2 = createSprite(295,580,190,30);
-    block2.shapeColor = "orange";
 
-    //create two more blocks i.e. block3 and block4 here
-    block3 = createSprite(495,580,190,30);
-    block3.shapeColor = "green";
+	engine = Engine.create();
+	world = engine.world;
 
-    block4 = createSprite(695,580,190,30);
-    block4.shapeColor = "red";
+	starBody = Bodies.circle(650 , 30 , 5 , {restitution:0.5, isStatic:true});
+	World.add(world, starBody);
+	
+	Engine.run(engine);
 
-    ball = createSprite(random(20,750),100, 40,40);
-    ball.shapeColor = rgb(255,255,255);
-    //write code to add velocityX and velocityY
-
-    ball.velocityX = 3;
-    ball.velocityY = 9;
 }
+
 
 function draw() {
-    background(rgb(169,169,169));
-    edges=createEdgeSprites();
-    ball.bounceOff(edges);
+  background(bgImg);
 
-    
-    //write code to bounce off ball from the block1 
-    
-    if(block1.isTouching(ball) && ball.bounceOff(block1))
-    {
-        //ball.velocityX = ball.velocityX * (-1);
-        //ball.velocityY = ball.velocityY * (-1);
-        ball.shapeColor = "blue";
-        music.play();
-    }
+  star.x= starBody.position.x 
+  star.y= starBody.position.y 
 
+  keyPressed();
 
+  console.log(star.y);
 
-    if(block2.isTouching(ball)){
-        ball.shapeColor = "orange";
-        //write code to set velocityX and velocityY of ball as 0
-        ball.velocityX = 0;
-        ball.velocityY = 0;
+  //write code to stop star in the hand of fairy
 
-        //write code to stop music
-        music.stop();
+  if(star.y > 520 && starBody.position.y > 520)
+  {
+	Matter.Body.setStatic(starBody, true);
+  }
 
-    }
+  drawSprites();
 
-    //write code to bounce off ball from the block3
-    if(block3.isTouching(ball) && ball.bounceOff(block3))
-    {
-       // ball.velocityX = ball.velocityX * (-1);
-       // ball.velocityY = ball.velocityY * (-1);
-        ball.shapeColor = "green";
-        //music.play();
-    }
+}
 
-    //write code to bounce off ball from the block4
-    if(block4.isTouching(ball) && ball.bounceOff(block4))
-    {
-        //ball.velocityX = ball.velocityX * (-1);
-        //ball.velocityY = ball.velocityY * (-1);
-        ball.shapeColor = "red";
-        //music.play();
-    }
+function keyPressed() {
 
-    drawSprites();
+	if (keyCode === DOWN_ARROW) {
+		Matter.Body.setStatic(starBody,false); 
+	}
+
+	//write code to move fairy left and right
+	if(keyDown("left"))
+	{
+		fairy.x = fairy.x - 2;
+		fairy.addAnimation(fairyAnime);
+	}
+	if(keyDown("right"))
+	{
+		fairy.x = fairy.x + 2;
+		fairy.addAnimation(fairyAnime);
+	}
 }
